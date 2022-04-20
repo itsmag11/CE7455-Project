@@ -1,10 +1,6 @@
-EXPID=snli-baseline-2
+EXPID=snli-baseline
 
-NUM_GPU=1
-
-srun -p dsta --mpi=pmi2 --gres=gpu:$NUM_GPU --ntasks-per-node=$NUM_GPU -n1 \
-    --job-name=baseline --kill-on-bad-exit=1 --cpus-per-task=4 -w SG-IDC1-10-51-2-79 \
-    python \
+python \
     run_classifier.py \
       --data_dir "glue_data/glue_labeled_data/SNLI" \
       --task_name 'snli' \
