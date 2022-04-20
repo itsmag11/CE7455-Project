@@ -109,18 +109,18 @@ class srl_labeler():
 
 srl_labeler = srl_labeler()
 
-# folder = "snli_1.0"
-# batch_size = 40
-# index_a = 5
-# index_b = 6
-# index_label = 0
-# has_b = True
-# data_path = "glue_data/" + folder + "/train.txt"
-# srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b)
-# data_path = "glue_data/" + folder + "/dev.txt"
-# srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b)
-# data_path = "glue_data/" + folder + "/test.txt"
-# srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b, True)
+folder = "snli_1.0"
+batch_size = 40
+index_a = 5
+index_b = 6
+index_label = 0
+has_b = True
+data_path = "glue_data/" + folder + "/train.txt"
+srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b)
+data_path = "glue_data/" + folder + "/dev.txt"
+srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b)
+data_path = "glue_data/" + folder + "/test.txt"
+srl_labeler.annoatate_txt(data_path, batch_size, index_a, index_b, index_label, has_b, True)
 
 folder = "RTE"
 batch_size = 40
@@ -134,7 +134,7 @@ data_path = "glue_data/" + folder + "/dev.tsv"
 srl_labeler.annoatate(data_path, batch_size, index_a, index_b, index_label, has_b)
 data_path = "glue_data/" + folder + "/test.tsv"
 srl_labeler.annoatate(data_path, batch_size, index_a, index_b, index_label, has_b, True)
-#
+
 # folder = "WNLI"
 # batch_size = 80
 # index_a = 1
