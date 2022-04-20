@@ -3,7 +3,10 @@ This subfolder is specially for doing experiments for modification on semantic i
 
 ### Models ###
 **Addition Strategy 1**
+![](addition_strategy_1.png)
 
+**Addition Strategy 2**
+![](addition_strategy_2.png)
 
 ### Command for Training and Evaluation ###
 ```shell
