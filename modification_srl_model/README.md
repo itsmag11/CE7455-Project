@@ -16,6 +16,26 @@ bash scripts/rte_baseline.sh
 
 ## Data Preparation
 
-Download SNLI raw data from [here](https://nlp.stanford.edu/projects/snli/snli_1.0.zip) and RTE glue-version dataset using this [script](https://gist.github.com/W4ngatang/60c2bdb54d156a41194446737ce03e2e).
+Download SNLI raw data from [here](https://nlp.stanford.edu/projects/snli/snli_1.0.zip).
 
 Put the downloaded `snli_1.0` folder under the `glue_data` folder.
+
+## Run
+
+To run offline tagger for both SNLI and RTE datasets using BERT-based SRL model, do:
+
+```
+bash scripts/offline_tagger.sh
+```
+
+To run the entire framework using new self-tagged SNLI dataset, do:
+
+ ```
+ bash scripts/snli_self_tag.sh
+ ```
+ 
+To run the entire framework using new self-tagged RTE dataset, do:
+
+ ```
+ bash scripts/rte_self_tag.sh
+ ```
