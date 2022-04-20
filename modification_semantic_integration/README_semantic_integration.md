@@ -23,6 +23,9 @@ python3 \
 	--output_dir $OUTPUT_DIR
 ```
 
+**Note: how to select the model**
+The models are specified ```./pytorch_pretrained_bert/modeling.py```. ```class SemanticIntegrationMLP1``` is for Addition Strategy 1, and ```class SemanticIntegrationMLP2``` is for Addition Strategy 2. The selection of the model is represented as the variable ```self.semintmlp``` in the ``__init__()``` function of ```class BertForSequenceClassificationTag```. 
+
 ### Models ###
 **Addition Strategy 1**
 ![](addition_strategy_1.png)
