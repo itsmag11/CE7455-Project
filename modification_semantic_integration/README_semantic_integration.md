@@ -28,8 +28,11 @@ The models are specified ```./pytorch_pretrained_bert/modeling.py```. ```class S
 
 ### Models ###
 **Addition Strategy 1**
+<div align=center>
 <img height="100" src="addition_strategy_1.png">
-
+<div>
 
 **Addition Strategy 2**
+<div align=center>
 <img height="100" src="addition_strategy_2.png">
+<div>
