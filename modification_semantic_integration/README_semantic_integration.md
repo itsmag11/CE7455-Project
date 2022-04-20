@@ -1,5 +1,9 @@
 ### Overview ###
-This subfolder is specially for doing semantic integration experiments. Please follow `../README.md` to download the data and put the data into `./glue_data/`. 
+This subfolder is specially for doing experiments for modification on semantic integration. Please follow `../README.md` to download the data and put the data into `./glue_data/`. The settings for training and evalutation following the original SemBERT, which is the same as other two modifications.
+
+### Models ###
+## Addition Strategy 1 ##
+
 
 ### Command for Training and Evaluation ###
 ```shell
