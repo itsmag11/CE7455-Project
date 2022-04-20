@@ -1,13 +1,6 @@
 ### Overview ###
 This subfolder is specially for doing experiments for modification on semantic integration. Please follow `../README.md` to download the data and put the data into `./glue_data/`. The settings for training and evalutation following the original SemBERT, which is the same as other two modifications.
 
-### Models ###
-**Addition Strategy 1**
-![](addition_strategy_1.png)
-
-**Addition Strategy 2**
-![](addition_strategy_2.png)
-
 ### Command for Training and Evaluation ###
 ```shell
 CUDA_VISIBLE_DEVICES=0
@@ -29,3 +22,10 @@ python3 \
 	--max_num_aspect 3 \
 	--output_dir $OUTPUT_DIR
 ```
+
+### Models ###
+**Addition Strategy 1**
+![](addition_strategy_1.png)
+
+**Addition Strategy 2**
+![](addition_strategy_2.png)
