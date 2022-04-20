@@ -39,3 +39,7 @@ To run the entire framework using new self-tagged RTE dataset, do:
  ```
  bash scripts/rte_self_tag.sh
  ```
+ 
+ # Output
+  
+ For each experiment, a result folder named by the `EXPID` in each bash file will be created under a `results` folder. Each result folder contains a eval logits and model of each epoch, two result text files for dev and test folder respectively, a tensorboard file, and a log text file to record the experiment settings.
