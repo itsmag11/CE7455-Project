@@ -580,16 +580,16 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         assert len(segment_ids) == max_seq_length
 
         label_id = label_map[example.label]
-#         if ex_index < 5:
-#             logger.info("*** Example ***")
-#             logger.info("guid: %s" % (example.guid))
-#             logger.info("tokens: %s" % " ".join(
-#                     [str(x) for x in tokens]))
-#             logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
-#             logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
-#             logger.info(
-#                     "segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
-#             logger.info("label: %s (id = %d)" % (example.label, label_id))
+        if ex_index < 5:
+            logger.info("*** Example ***")
+            logger.info("guid: %s" % (example.guid))
+            logger.info("tokens: %s" % " ".join(
+                    [str(x) for x in tokens]))
+            logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+            logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
+            logger.info(
+                    "segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
+            logger.info("label: %s (id = %d)" % (example.label, label_id))
 
         features.append(
                 InputFeatures(input_ids=input_ids,
@@ -784,7 +784,6 @@ def main():
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
     args = parser.parse_args()
-    print(args)
 
     if args.server_ip and args.server_port:
         # Distant debugging - see https://code.visualstudio.com/docs/python/debugging#_attach-to-a-local-script
@@ -832,10 +831,10 @@ def main():
     if not args.do_train and not args.do_eval and not args.do_predict:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
 
-#     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
-#         raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
-#     if not os.path.exists(args.output_dir):
-#         os.makedirs(args.output_dir)
+    if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
+        raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
 
     task_name = args.task_name.lower()
 
@@ -847,7 +846,7 @@ def main():
     label_list = processor.get_labels()
     num_labels = len(label_list)
 
-    tokenizer = BertTokenizer.from_cache(args.bert_model, do_lower_case=args.do_lower_case, cache_dir=args.cache_dir)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     if args.tagger_path != None:
         srl_predictor = SRLPredictor(args.tagger_path)
     else:
@@ -856,22 +855,16 @@ def main():
     num_train_optimization_steps = None
     if args.do_train:
         train_examples = processor.get_train_examples(args.data_dir)
-        # print(len(train_examples)) # 549367 for bert-base-uncased
-#         exit()
-        # train_examples_len = 549367
         num_train_optimization_steps = int(
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         if args.local_rank != -1:
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
-    
 
     train_features = None
     if args.do_train:
-#         train_features = convert_examples_to_features(
-#             train_examples, label_list, args.max_seq_length, tokenizer,srl_predictor=srl_predictor )
+        train_features = convert_examples_to_features(
+            train_examples, label_list, args.max_seq_length, tokenizer,srl_predictor=srl_predictor )
         #TagTokenizer.make_tag_vocab("tag_vocab", tag_vocab)
-        with open('./train_features_{0}_{1}.pkl'.format(args.task_name, args.bert_model), 'rb') as f:
-            train_features = pickle.load(f)
     tag_tokenizer = TagTokenizer()
     vocab_size = len(tag_tokenizer.ids_to_tags)
     print("tokenizer vocab size: ", str(vocab_size))
@@ -882,24 +875,20 @@ def main():
                            dropout_prob=0.1,
                            num_aspect=args.max_num_aspect)
     # Prepare model
-    
     cache_dir = args.cache_dir if args.cache_dir else os.path.join(PYTORCH_PRETRAINED_BERT_CACHE, 'distributed_{}'.format(args.local_rank))
-
-    model = BertForSequenceClassificationTag.from_cached(args.bert_model,
-              cache_dir=cache_dir,
+    model = BertForSequenceClassificationTag.from_pretrained(args.bert_model,
+              cache_dir=PYTORCH_PRETRAINED_BERT_CACHE / 'distributed_{}'.format(args.local_rank),
               num_labels = num_labels,tag_config=tag_config)
-
     if args.fp16:
         model.half()
     model.to(device)
     if args.local_rank != -1:
-#         try:
-#             from apex.parallel import DistributedDataParallel as DDP
-#         except ImportError:
-#             raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
+        try:
+            from apex.parallel import DistributedDataParallel as DDP
+        except ImportError:
+            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
 
-#         model = DDP(model)
-        model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True)
+        model = DDP(model)
     elif n_gpu > 1:
         model = torch.nn.DataParallel(model)
 
@@ -976,11 +965,11 @@ def main():
             eval_sampler = SequentialSampler(eval_data)
             eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
 
-        for epoch in trange(int(args.num_train_epochs), desc="{0} Epoch".format(args.local_rank)):
+        for epoch in trange(int(args.num_train_epochs), desc="Epoch"):
             model.train()
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
-            for step, batch in enumerate(tqdm(train_dataloader, desc="{0} Iteration".format(args.local_rank))):
+            for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, start_end_idx, input_tag_ids, label_ids = batch
                 loss = model(input_ids, segment_ids, input_mask, start_end_idx, input_tag_ids,  label_ids)
@@ -1126,11 +1115,10 @@ def main():
             # epoch = 1
             output_model_file = os.path.join(args.output_dir, str(epoch) + "_pytorch_model.bin")
             model_state_dict = torch.load(output_model_file)
-            predict_model = BertForSequenceClassificationTag.from_cached(args.bert_model,
-                                                                        cache_dir=cache_dir,
-                                                                        state_dict=model_state_dict,
-                                                                        num_labels=num_labels,
-                                                                        tag_config=tag_config)
+            predict_model = BertForSequenceClassificationTag.from_pretrained(args.bert_model,
+                                                                             state_dict=model_state_dict,
+                                                                             num_labels=num_labels,
+                                                                             tag_config=tag_config)
             predict_model.to(device)
             predict_model.eval()
             eval_loss, eval_accuracy = 0, 0
@@ -1217,11 +1205,7 @@ def main():
 
         output_model_file = os.path.join(args.output_dir, str(best_epoch)+ "_pytorch_model.bin")
         model_state_dict = torch.load(output_model_file)
-        predict_model = BertForSequenceClassificationTag.from_cached(args.bert_model,
-                                                                        cache_dir=cache_dir,
-                                                                        state_dict=model_state_dict,
-                                                                        num_labels=num_labels,
-                                                                        tag_config=tag_config)
+        predict_model = BertForSequenceClassificationTag.from_pretrained(args.bert_model, state_dict=model_state_dict,num_labels = num_labels,tag_config=tag_config)
         predict_model.to(device)
         predict_model.eval()
         predictions = []
