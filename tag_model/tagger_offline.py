@@ -1,6 +1,6 @@
 # coding:utf-8
 import json
-from allennlp.predictors import Predictor
+from   allennlp.predictors import Predictor
 import csv
 import sys
 import time

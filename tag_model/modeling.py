@@ -6,6 +6,8 @@ import torch.nn.functional as F
 class TagConfig(object):
     def __init__(self,
                  tag_vocab_size,
+                 embed_model,
+                 attention=False,
                  hidden_size=5,
                  layer_num=1,
                  output_dim=5,
@@ -18,6 +20,8 @@ class TagConfig(object):
         self.dropout_prob = dropout_prob
         self.output_dim = output_dim
         self.num_aspect = num_aspect
+        self.embed_model = embed_model
+        self.attention = attention
 
 
 class LayerNorm(nn.Module):
@@ -116,6 +120,7 @@ class BiGRU(nn.Module):
 
         return logit
 
+
 class TagEmebedding(nn.Module):
 
     def __init__(self, config):
@@ -123,9 +128,17 @@ class TagEmebedding(nn.Module):
         # Embedding
         self.hidden_size = config.hidden_size
         self.embed = TagEmbeddings(config)
-        # Linear
-        #self.fc = nn.Linear(config.hidden_size * 2, config.output_dim)
-        self.fc = nn.Linear(config.hidden_size, config.output_dim)
+        if config.embed_model == 'linear':
+            # Linear
+            #self.fc = nn.Linear(config.hidden_size * 2, config.output_dim)
+            self.fc = nn.Linear(config.hidden_size, config.output_dim)
+        elif config.embed_model == 'bigru':
+            self.fc = BiGRU(config)
+        else:
+            self.fc = GRUModel(config)
+
+
+
         #  dropout
         self.dropout = nn.Dropout(config.dropout_prob)
 

@@ -11,6 +11,7 @@ import sys
 
 import numpy as np
 import torch
+from numpy import unicode
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
 from tqdm import tqdm, trange
@@ -404,6 +405,9 @@ def main():
                              "0 (default value): dynamic loss scaling.\n"
                              "Positive power of 2: static loss scaling value.\n")
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument('--srl_embedding', type=str, default='linear', help="set model to embed srl label")
+    parser.add_argument('--srl_attention', type=bool, default= False, help= "if use attention")
+
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
     args = parser.parse_args()
 
@@ -469,6 +473,8 @@ def main():
     vocab_size = len(tag_tokenizer.ids_to_tags)
     print("tokenizer vocab size: ", str(vocab_size))
     tag_config = TagConfig(tag_vocab_size=vocab_size,
+                           embed_model=args.srl_embedding,
+                           attention =  args.srl_attention,
                            hidden_size=10,
                            layer_num=1,
                            output_dim=10,
