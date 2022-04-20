@@ -1,5 +1,5 @@
 Command to run:
-'''shell
+```shell
 CUDA_VISIBLE_DEVICES=0
 EXPNAME=$1
 OUTPUT_DIR=glue/${EXPNAME}
@@ -18,4 +18,4 @@ python3 \
 	--do_lower_case \
 	--max_num_aspect 3 \
 	--output_dir $OUTPUT_DIR
-'''
+```
