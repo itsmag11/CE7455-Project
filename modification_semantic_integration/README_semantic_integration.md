@@ -24,7 +24,7 @@ python3 \
 ```
 
 ### Model Selection ###
-The models are specified ```./pytorch_pretrained_bert/modeling.py```. ```class SemanticIntegrationMLP1``` is for Addition Strategy 1, and ```class SemanticIntegrationMLP2``` is for Addition Strategy 2. The selection of the model is represented as the variable ```self.semintmlp``` in the ``__init__()``` function of ```class BertForSequenceClassificationTag```. Note that there are other additional classes such as ```OurCNN```, ```OurMLP``` and etc., which are the legacies of other explorations.
+The models are specified ```./pytorch_pretrained_bert/modeling.py```. ```class SemanticIntegrationMLP1``` is for Addition Strategy 1, and ```class SemanticIntegrationMLP2``` is for Addition Strategy 2. The selection of the model is represented as the variable ```self.semintmlp``` in the ```__init__()``` function of ```class BertForSequenceClassificationTag```. Note that there are other additional classes such as ```OurCNN```, ```OurMLP``` and etc., which are the legacies of other explorations.
 ```python
 class BertForSequenceClassificationTag(BertPreTrainedModel):
     def __init__(self, config, num_labels=2, tag_config=None):
