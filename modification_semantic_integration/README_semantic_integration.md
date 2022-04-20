@@ -43,9 +43,11 @@ class BertForSequenceClassificationTag(BertPreTrainedModel):
 ```
 
 ### Addition Strategy 1 ###
-Addition Strategy 1 casts the SRL feature into the dimension same as the BERT feature and then adds the two features together as the fused feature.
 <img height="100" src="addition_strategy_1.png">
+Addition Strategy 1 casts the SRL feature into the dimension same as the BERT feature and then adds the two features together as the fused feature.
+
 
 ### Addition Strategy 2 ###
-Addition Strategy 2 casts both the SRL feature and the BERT feature into the dimension that is 2 times the original BERT feature and then adds the two features as the fused feature.
 <img height="100" src="addition_strategy_2.png">
+Addition Strategy 2 casts both the SRL feature and the BERT feature into the dimension that is 2 times the original BERT feature and then adds the two features as the fused feature.
+
