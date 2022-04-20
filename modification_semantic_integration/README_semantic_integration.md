@@ -1,4 +1,7 @@
-Command to run:
+### Overview ###
+This subfolder is specially for doing semantic integration experiments. Please follow `../README.md` to download the data and put the data into `./glue_data/`. 
+
+### Command for Training and Evaluation ###
 ```shell
 CUDA_VISIBLE_DEVICES=0
 EXPNAME=$1
