@@ -37,6 +37,8 @@ class BertForSequenceClassificationTag(BertPreTrainedModel):
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         # self.cnn = OurCNN(config, filter_size=self.filter_size)
         # self.nextmlp = OurMLP(config)
+	
+	# Specify the model in the following line:
         self.semintmlp = SemanticIntegrationMLP2(config, tag_config)
 ```
 
