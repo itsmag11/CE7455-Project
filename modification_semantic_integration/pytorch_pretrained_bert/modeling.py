@@ -1041,7 +1041,6 @@ class CNN_conv1d(nn.Module):
         self.char_cnn =nn.Conv1d(self.char_dim, self.char_dim,kernel_size=self.filter_size,
                      padding=0)
         self.relu = nn.ReLU()
-        #print("dropout:",str(config.hidden_dropout_prob))
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
     def forward(self, inputs, max_word_len):
@@ -1051,7 +1050,6 @@ class CNN_conv1d(nn.Module):
         """
         if(len(inputs.size())>3):
             bsz, word_len,  max_word_len, dim = inputs.size()
-            #print(bsz, word_len,  max_word_len, dim)
         else:
             bsz, word_len, dim = inputs.size()
             word_len = int(word_len / max_word_len)
@@ -1072,31 +1070,12 @@ class OurMLP(nn.Module):
         self.layer1 = nn.Linear(self.hidden_size, self.hidden_size * 2)
         self.relu = nn.ReLU()
         self.layer2 = nn.Linear(self.hidden_size * 2, self.hidden_size)
-        #print("dropout:",str(config.hidden_dropout_prob))
-#         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
     def forward(self, inputs):
-        """
-        Arguments:
-            inputs: [batch_size, word_len, char_len]
-        """
-#         if(len(inputs.size())>3):
-#             bsz, word_len,  max_word_len, dim = inputs.size()
-#             #print(bsz, word_len,  max_word_len, dim)
-#         else:
-#             bsz, word_len, dim = inputs.size()
-#             word_len = int(word_len / max_word_len)
-
-#         print("inputs:", inputs.shape)
         x = self.layer1(inputs)
-#         print("x1:", x.shape)
         x = self.relu(x)
-#         print("x2:", x.shape)
         x = self.layer2(x)
-#         print("x3:", x.shape)
-#         x = F.max_pool1d(x, kernel_size=x.size(-1))
-#         x = self.dropout(x.squeeze())
-        
+
         return x
 
 
@@ -1110,7 +1089,6 @@ class OurCNN(nn.Module):
         self.char_cnn =nn.Conv1d(self.char_dim, self.char_dim,kernel_size=self.filter_size,
                      padding=1)
         self.relu = nn.ReLU()
-        #print("dropout:",str(config.hidden_dropout_prob))
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
     def forward(self, inputs, max_word_len):
@@ -1120,31 +1098,20 @@ class OurCNN(nn.Module):
         """
         if(len(inputs.size())>3):
             bsz, word_len,  max_word_len, dim = inputs.size()
-            #print(bsz, word_len,  max_word_len, dim)
         else:
             bsz, word_len, dim = inputs.size()
             word_len = int(word_len / max_word_len)
 
-#         inputs = inputs.view(-1, max_word_len, dim)
-#         print("inputs:", inputs.shape)
         x = inputs.permute(0, 3, 1, 2)
         x = x.view(bsz, dim, word_len * max_word_len)
-#         print("x1", x.shape)
         x = self.char_cnn(x)
         x = self.relu(x)
-#         print("x2", x.shape)
         x = x.view(bsz * dim, word_len * max_word_len)
         x = x.view(bsz * dim, word_len, max_word_len)
-#         print("x3", x.shape)
         x = F.max_pool1d(x, kernel_size=x.size(-1))
-#         print("x4", x.shape)
-
         x = self.dropout(x.squeeze())
-#         print("x5", x.shape)
         x = x.view(bsz, dim, word_len)
-#         print("x6", x.shape)
         x = x.view(bsz, word_len, -1)
-#         print("x7", x.shape)
         return x
 
 
@@ -1156,33 +1123,13 @@ class SemanticIntegrationMLP1(nn.Module):
         self.tag_hidden_size = tag_config.hidden_size
         self.layer1_tag = nn.Linear(self.tag_hidden_size, self.cnn_hidden_size)
         self.relu = nn.ReLU()
-        # self.layer2 = nn.Linear(self.hidden_size * 2, self.hidden_size)
-        #print("dropout:",str(config.hidden_dropout_prob))
-        # self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
     def forward(self, cnn_inputs, tag_inputs):
-        """
-        Arguments:
-            inputs: [batch_size, word_len, char_len]
-        """
-        # if(len(inputs.size())>3):
-        #     bsz, word_len,  max_word_len, dim = inputs.size()
-        #     #print(bsz, word_len,  max_word_len, dim)
-        # else:
-        #     bsz, word_len, dim = inputs.size()
-        #     word_len = int(word_len / max_word_len)
-
-        # print("inputs:", inputs.shape)
         x = self.layer1_tag(tag_inputs) + cnn_inputs
-        # print("x1:", x.shape)
         x = self.relu(x)
-        # print("x2:", x.shape)
-        # x = self.layer2(x)
-        # print("x3:", x.shape)
-        # x = F.max_pool1d(x, kernel_size=x.size(-1))
-        # x = self.dropout(x.squeeze())
-        
+
         return x
+
 class SemanticIntegrationMLP2(nn.Module):
     def __init__(self, config, tag_config):
         super(SemanticIntegrationMLP2, self).__init__()
@@ -1192,32 +1139,39 @@ class SemanticIntegrationMLP2(nn.Module):
         self.layer1_cnn = nn.Linear(self.cnn_hidden_size, self.cnn_hidden_size * 2)
         self.relu = nn.ReLU()
         self.layer2 = nn.Linear(self.cnn_hidden_size * 2, self.cnn_hidden_size)
-        #print("dropout:",str(config.hidden_dropout_prob))
-        # self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
     def forward(self, cnn_inputs, tag_inputs):
-        """
-        Arguments:
-            inputs: [batch_size, word_len, char_len]
-        """
-        # if(len(inputs.size())>3):
-        #     bsz, word_len,  max_word_len, dim = inputs.size()
-        #     #print(bsz, word_len,  max_word_len, dim)
-        # else:
-        #     bsz, word_len, dim = inputs.size()
-        #     word_len = int(word_len / max_word_len)
-
-        # print("inputs:", inputs.shape)
         x = self.layer1_tag(tag_inputs) + self.layer1_cnn(cnn_inputs)
-        print("x1:", x.shape)
         x = self.relu(x)
-        print("x2:", x.shape)
         x = self.layer2(x)
-        print("x3:", x.shape)
-        # x = F.max_pool1d(x, kernel_size=x.size(-1))
-        # x = self.dropout(x.squeeze())
         
         return x
+
+class SemanticIntegrationMLP3(nn.Module):
+    def __init__(self, config, tag_config):
+        super(SemanticIntegrationMLP3, self).__init__()
+        self.cnn_hidden_size = config.hidden_size
+        self.tag_hidden_size = tag_config.hidden_size
+        self.num_aspect = tag_config.num_aspect
+        self.layer1_tag = nn.Linear(self.tag_hidden_size, self.cnn_hidden_size)
+        self.relu = nn.ReLU()
+
+    def forward(self, cnn_inputs, tag_inputs):
+        batch_size, seq_len, _, _ = tag_inputs.shape
+        x = self.layer1_tag(tag_inputs)
+        y = cnn_inputs.unsqueeze(3)
+        y = y.expand(batch_size, seq_len, self.cnn_hidden_size, self.num_aspect)
+        y = y.transpose(2, 3)
+
+        z = torch.mul(x, y).sum(dim=3)
+        z = torch.nn.functional.softmax(z, 2).unsqueeze(dim=3)
+        z = z.expand(batch_size, seq_len, self.num_aspect, self.cnn_hidden_size)
+        
+        u = torch.mul(z, x)
+        u = u.sum(dim=2).squeeze()
+        u = self.relu(u)
+        
+        return u
 
 class BertForSequenceClassificationTag(BertPreTrainedModel):
     def __init__(self, config, num_labels=2, tag_config=None):
@@ -1226,13 +1180,11 @@ class BertForSequenceClassificationTag(BertPreTrainedModel):
         self.bert = BertModel(config)
         self.filter_size = 3
         self.cnn = CNN_conv1d(config, filter_size=self.filter_size)
+        self.activation = nn.Tanh()
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
         # self.cnn = OurCNN(config, filter_size=self.filter_size)
         # self.nextmlp = OurMLP(config)
         self.semintmlp = SemanticIntegrationMLP2(config, tag_config)
-
-        self.activation = nn.Tanh()
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        # print(tag_config.hidden_size) # 10
 
         if tag_config is not None:
             hidden_size = config.hidden_size + tag_config.hidden_size
@@ -1287,16 +1239,10 @@ class BertForSequenceClassificationTag(BertPreTrainedModel):
             batch_start_end_ids.append(word_seqs)
             batch_id += 1
 
-        # print("max_seq_len:", max_seq_len)
-        # print("max_word_len", max_word_len) # 4
-        # print("sequence_output:", sequence_output.shape) # (batch_size, 128, hidden_size)
-
         batch_start_end_ids = torch.tensor(batch_start_end_ids)
         batch_start_end_ids = batch_start_end_ids.view(-1)
         sequence_output = sequence_output.view(-1, dim)
-        # print("sequence_output:", sequence_output.shape) # (batch_size*128, hidden_size)
         sequence_output = torch.cat([sequence_output.new_zeros((1, dim)), sequence_output], dim=0)
-        # print("sequence_output:", sequence_output.shape) # (batch_size*128 + 1, hidden_size)
 
         if not no_cuda:
             batch_start_end_ids = batch_start_end_ids.cuda()
@@ -1305,49 +1251,32 @@ class BertForSequenceClassificationTag(BertPreTrainedModel):
         if not no_cuda:
             cnn_bert = cnn_bert.cuda()
 
-        # print("cnn_bert", cnn_bert.shape) # (batch_size, max_seq_len, 4, hidden_size)
         bert_output = self.cnn(cnn_bert, max_word_len)
-        # print("bert_output:", bert_output.shape) # (batch_size, max_seq_len, hidden_size)
         # bert_output = self.nextmlp(bert_output)
-        # print("bert_output:", bert_output.shape)
 
         use_tag = True
         if use_tag:
             num_aspect = input_tag_ids.size(1)
-            # print("num_aspect:", num_aspect)
             input_tag_ids = input_tag_ids[:,:,:max_seq_len]
-            # print("input_tag_ids:", input_tag_ids.shape) # (batch_size, 3, max_seq_len)
             flat_input_tag_ids = input_tag_ids.view(-1, input_tag_ids.size(-1))
-            # print("flat_que_tag", flat_input_que_tag_ids.size())
             tag_output = self.tag_model(flat_input_tag_ids, num_aspect)
             # batch_size, que_len, num_aspect*tag_hidden_size
-            # print("tag_output:", tag_output.shape) # (batch_size, num_aspect, max_seq_len, 10)
             tag_output = tag_output.transpose(1, 2).contiguous().view(batch_size,
                                                                       max_seq_len, -1)
-            # print("tag_output:", tag_output.shape) # (batch_size, max_seq_len, num_aspect*10)
             tag_output = self.dense(tag_output)
             
-            # print("tag_output:", tag_output.shape) # (batch_size, max_seq_len, 10)
-            # print("bert_output:", bert_output.shape)
             # sequence_output = torch.cat((bert_output, tag_output), 2)
             sequence_output = self.semintmlp(bert_output, tag_output)
 
         else:
             sequence_output = bert_output
 
-        # print("sequence_output:", sequence_output.shape) # (batch_size, max_seq_len, hidden_size+10)
         first_token_tensor, pool_index = torch.max(sequence_output, dim=1)
-        # print("first_token_tensor:", first_token_tensor.shape) # (batch_size, max_seq_len)
-
+        
         pooled_output = self.pool(first_token_tensor)
-        # print("pooled_output 1:", pooled_output.shape)
         pooled_output = self.activation(pooled_output)
-        # print("pooled_output 2:", pooled_output.shape)
         pooled_output = self.dropout(pooled_output)
-        # print("pooled_output 3:", pooled_output.shape)
         logits = self.classifier(pooled_output)
-        # print("logits:", logits.shape)
-        # exit()
 
         if labels is not None:
             loss_fct = CrossEntropyLoss()
